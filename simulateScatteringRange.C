@@ -67,18 +67,26 @@ ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >*
  	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >* vectors;
 
 	if ( incomingRadiator ){
+		//cout<<"->->->->->->->->->Incoming radiator: "<<endl;
 		double lambda_e_tilda = lambda_incident(e1, e3_elastic, theta);
 		//double lambda_e_tilda = lambda_e(incidentElectronEnergy);
 		double e1_required = incidentEnergyFromScatteredEnergy(e3,theta);
 		photonEnergy = e1 - e1_required;
+		if( photonEnergy < 0 ){
+			cout<<"WARNING: Just change lost energy from "<<photonEnergy<<" to ZERO."<<endl;
+			photonEnergy = 0;
+			e1_required = e1;
+		}
+
 		crossSection *= simulateRadiator(e1, randomObject, lambda_e_tilda, photonEnergy);
 		crossSection *= rosenbluth_formula( theta, e1_required);
 		vectors = elastic4Vectors(e1_required, theta);
-		//cout<<"Deviation is: "<<e3 - vectors[2].E()<<endl;
+		//cout<<"Deviation is: "<<scatteredElectronEnergy - vectors[2].E()<<endl;
 	}
 
 
 	if ( !incomingRadiator ){
+		//cout<<"Outgoing radiator->->->->->->->: "<<endl;
 		crossSection *= rosenbluth_formula( theta, e1);
 		vectors = elastic4Vectors(e1, theta);
 		double lambda_e_dash_tilda = lambda_scattered(e1, e3_elastic, theta);
@@ -91,6 +99,7 @@ ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >*
 	vectors[2].SetE(e3);
 	crossSection *= DELTAEMAX;
 
+
 	return vectors;
 
 }
@@ -98,7 +107,7 @@ ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >*
 
 // entry point to the program
 // call this root macro to start simulation
-void simulateScattering(double incidentElectronEnergy, int count){
+void simulateScatteringRange(double incidentElectronEnergy, int count){
 
 	TRandom *randomObject = new TRandom(0);
 	double originalIncidentEnergy = incidentElectronEnergy; // taking backup of 'incidentElectronEnergy' because it will be change in each event
@@ -119,17 +128,23 @@ void simulateScattering(double incidentElectronEnergy, int count){
 	double totalCrossSection = 0 ;
 	double totalRosenbluthCrossSection = 0 ;
 
+	//cout.precision(17);
+	//cout<<incidentElectronEnergy<<endl;
+
 	for( int events_needed = count ; events_needed > 0 ; ){
 
 
 		// start with the normalized cross section per event and change it to microbarns. It will be 
 		// modified by reference in equivalent radiators
-		crossSection = (2*PI)/(count);
+		crossSection = (2*PI)*( COS(MINIMUM_DETECTOR_ANGLE) - COS(MAXIMUM_DETECTOR_ANGLE))/(count);
 		crossSection *= GeV2ub;
 		rosenbluthCrossSection = crossSection;
 		incidentElectronEnergy = originalIncidentEnergy;
 
-		theta = EXACT_DETECTOR_ANGLE;
+		// generate random theta between the required range
+		double cosMax = COS( MINIMUM_DETECTOR_ANGLE - 0.05*ONE_DEGREE);
+		double cosMin = COS( MAXIMUM_DETECTOR_ANGLE + 0.05*ONE_DEGREE);
+		theta = ACOS( randomObject->Uniform(cosMin,cosMax) );
 
 		// Calculate the 'expected' energy of elastically scattered electron because we use it to calculate radiator width
 		double e3_el = calculateScatteredElectronEnergy2(incidentElectronEnergy, theta);
@@ -157,17 +172,21 @@ void simulateScattering(double incidentElectronEnergy, int count){
 
 
 		if ( photonEnergy < 0){
-			cout<<" Bremstrrulung energy not calculated properly";
+			cout<<" xxxxxxxxxx- Bremstrrulung energy not calculated properly -xxxxxxxxx"<<endl;
+			cout<<e3_el<<" :max"<<endl;
+			cout<<e3<<" :chosen"<<endl;
+			cout<<photonEnergy<<" :photon"<<endl;
 			exit(1);
 		}
 
 
-		phi = randomObject->Uniform(0,2*PI);
+	//	phi = randomObject->Uniform(0,2*PI);
+		phi = 1.57;
 
-		double protonTheta = TMath::ATan(vectors[3].Py()/vectors[3].Pz());
+	//	double protonTheta = TMath::ATan(vectors[3].Py()/vectors[3].Pz());
 
-		if ( protonTheta < 0 )
-			protonTheta = protonTheta + PI; // Since ATan gives
+	//	if ( protonTheta < 0 )
+	//		protonTheta = protonTheta + PI; // Since ATan gives
 		// output from -pi/2 to pi/2 I am shifting the angles b/w ( -90,0) to (90,180)
 
 
@@ -184,28 +203,32 @@ void simulateScattering(double incidentElectronEnergy, int count){
 		// Detectors need angles in degrees. So do conversion here.
 		double thetaDegrees = rad2degree(theta);
 		double phiDegrees = rad2degree(phi);
-		double thetaProton = rad2degree(protonTheta);
+//		double thetaProton = rad2degree(protonTheta);
 		// phi for proton can be found from phi electron by rotating around 180 degrees
-		double phiProton = (phiDegrees + 180);
-		if ( phiProton >= 360) phiProton -= 360;  // I need to be more careful here. Phi might have sign problem. 
+//		double phiProton = (phiDegrees + 180);
+//		if ( phiProton >= 360) phiProton -= 360;  // I need to be more careful here. Phi might have sign problem. 
 		// But since the scattering is phi symmmetric, I am leaving it for now.
 
 		rosenbluthCrossSection *= rosenbluth_formula( theta, originalIncidentEnergy);
 		if ( electronDetector->detect(thetaDegrees, phiDegrees, vectors[2].E(), crossSection) ) {
+		//if ( electronDetector->detect(thetaDegrees, phiDegrees, vectors[2].E(), 1) ) {
 			totalCrossSection += crossSection;
 			totalRosenbluthCrossSection += rosenbluthCrossSection;
 			events_needed--;
-			photonEnergyHistogram->Fill((photonEnergy)*1e-6, crossSection); 
-			missingEnergyHistogram->Fill((deltaE)*1e-6, crossSection); 
+			//photonEnergyHistogram->Fill((photonEnergy)*1e-6, crossSection); 
+			//missingEnergyHistogram->Fill((deltaE)*1e-6, crossSection); 
 		}
 
 		// using thetaDegrees here as a hack, otherwise proton detector won't work
-		protonDetector->detect(thetaDegrees, phiDegrees, vectors[3].E(), crossSection);
+		//protonDetector->detect(thetaDegrees, phiDegrees, vectors[3].E(), crossSection);
 		//---------------DETECTOR WORK END----------------------------
 
 
 
 	}
+
+
+
 
 
 	// Save the histogram of photon energies.
