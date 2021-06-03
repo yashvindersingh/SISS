@@ -48,6 +48,7 @@ class Detector {
         thetaHistogram = new TH1D("theta_l","theta_l",nbins_theta_p,xmin_theta_p,xmax_theta_p);
       
       }
+      totalEnergyHistogram->Sumw2();
       
   	}
 
@@ -89,7 +90,7 @@ class Detector {
     void decorateHistogram(){
 
       totalEnergyHistogram->GetYaxis()->SetTitle("cross-section(ub)");
-      totalEnergyHistogram->GetXaxis()->SetTitle("Total Energy(MeV)");
+      totalEnergyHistogram->GetXaxis()->SetTitle("Lepton Energy(MeV)");
 
       thetaHistogram->GetYaxis()->SetTitle("cross-section(ub)");
       thetaHistogram->GetXaxis()->SetTitle("Theta(radians)");

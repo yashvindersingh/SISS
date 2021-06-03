@@ -37,11 +37,10 @@
 // Below are the parameters for each run. Check readme page on Github for more information.
 #define MINIMUM_DETECTOR_ANGLE 15.95*TMath::Pi()/180
 #define MAXIMUM_DETECTOR_ANGLE 16.05*TMath::Pi()/180
-#define EXACT_DETECTOR_ANGLE 16*TMath::Pi()/180
+#define EXACT_DETECTOR_ANGLE 16.0*TMath::Pi()/180
 #define DELTAEMAX 500e6
-#define E3MAX 2300e6
-#define DESTINATION_FILE "../testing/t46.root"
-//#define DESTINATION_FILE "../debug2/b62_srii.root"
+#define DESTINATION_FILE "../testing/t102.root"
+
 
 // Number of bins for E_g,E_l,E_p,theta_p histgrams
 #define nbins_E_g 500
@@ -51,13 +50,13 @@
 
 // Lower value of x-axis range for E_g,E_l,E_p,theta_p histgrams ( in MeV and radians )
 #define xmin_E_g 0
-#define xmin_E_l 1500
+#define xmin_E_l 1800
 #define xmin_E_p 0
 #define xmin_theta_p 0
 
 // Upper value of x-axis range for E_g,E_l,E_p,theta_p histgrams ( in MeV and radians )
-#define xmax_E_g 2500
-#define xmax_E_l 2500
+#define xmax_E_g 30
+#define xmax_E_l 2300
 #define xmax_E_p 2500
 #define xmax_theta_p 1.6
 
