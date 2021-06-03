@@ -1,6 +1,6 @@
 
 # SISS
-Simple Inelastic Scattering Simulator is an event generator for inelastic electron-proton scattering. It uses equivalent-radiator method to generate events for electron-proton scattering. It is still a work under progress.
+Simple Inelastic Scattering Simulator is an event generator for inelastic electron-proton scattering. It uses equivalent-radiator method to generate events for electron-proton scattering.
 
 
 ## Requirements
@@ -49,13 +49,15 @@ E_g = Energy of photon
 
 
 ## References
-[1] Povh, B. (2015). Particles and nuclei: An introduction to the physical concepts. Heidelberg, Germany: Springer.
+[1] Ent, R. ; Filippone, B. W. ; Makins, N. C.R. ; Milner, R. G. ; O'Neill, T. G. ; Wasson, D. A. / Radiative corrections for (e,e′p) reactions at GeV energies. In: Physical Review C - Nuclear Physics. 2001 ; Vol. 64, No. 5. pp. 546101-5461023.
 
-[2] A.V. Gramolin, V.S. Fadin, A.L. Feldman, et al. A new event generator for the
-elastic scattering of charged leptons on protons. arXiv:1401.2959.
+[2]  R. A. Montgomery,  J. R. M. Annand,  D. Dutta, C. E. Keppel,  P. King,B. Wojtsekhowski, and J. Zhang.  Proposed measurement of tagged deepinelastic scattering in Hall A of Jefferson lab.AIP  Conf.  Proc.
 
-[3] Ent, R. ; Filippone, B. W. ; Makins, N. C.R. ; Milner, R. G. ; O'Neill, T. G. ; Wasson, D. A. / Radiative corrections for (e,e′p) reactions at GeV energies. In: Physical Review C - Nuclear Physics. 2001 ; Vol. 64, No. 5. pp. 546101-5461023.
+[3] Povh, B. (2015). Particles and nuclei: An introduction to the physical concepts. Heidelberg, Germany: Springer.
 
 [4] L.M. Mo and Y.S. Tsai, Rev. Mod. Phys. 41, 205 (1969).
 
 [5]  L. C. Maximon and J. A. Tjon.  Radiative corrections to electron-protonscattering.Physical Review C, 62(5), Oct 2000.  ISSN 1089-490X.  doi:  10.1103/physrevc.62.054320
+
+[6] A.V. Gramolin, V.S. Fadin, A.L. Feldman, et al. A new event generator for the
+elastic scattering of charged leptons on protons. arXiv:1401.2959.
